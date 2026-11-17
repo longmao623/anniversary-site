@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anniversary 2026</title>
+  <meta name="description" content="波浪在海面上 萤火在岸边" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Gochi+Hand&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #212121;
+      color: #F2E3CF;
+      font-family: "Noto Sans SC", sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    .font-caveat { font-family: "Caveat", cursive; }
+    .font-dancing { font-family: "Dancing Script", cursive; }
+    .font-gochi { font-family: "Gochi Hand", cursive; }
+
+    /* 手机票据卡片 - 固定宽度，响应式布局 */
+    .ticket-card {
+      position: relative;
+      width: 280px !important;
+      flex: none !important;
+      background: #F2E3CF;
+      color: #212121;
+      border-radius: 8px;
+      padding: 20px;
+      transform: rotate(1deg);
+      box-shadow: none;
+    }
+    /* 票据打孔效果 */
+    .ticket-card::before,
+    .ticket-card::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #212121;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .ticket-card::before { left: -6px; }
+    .ticket-card::after { right: -6px; }
+    /* 票据分割线 */
+    .ticket-card .divider {
+      width: 100%;
+      height: 1px;
+      border-top: 1px dashed rgba(33,33,33,0.3);
+      margin: 12px 0;
+    }
+
+    /* 水平时间线容器样式 */
+    .timeline-horizontal {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+    /* 水平时间线线条 */
+    .timeline-line {
+      position: absolute;
+      top: 50%;
+      left: 40px;
+      right: 40px;
+      height: 2px;
+      background: rgba(227, 83, 66, 0.3);
+      transform: translateY(-50%);
+    }
+    /* 时间节点 */
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      background: #E35342;
+      border-radius: 4px;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    /* 卡片布局 - 水平排列 */
+    .timeline-items {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+    /* 卡片上下布局 */
+    .timeline-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    /* 上方卡片 */
+    .timeline-item.top .ticket-card {
+      margin-bottom: 40px;
+    }
+    /* 下方卡片 */
+    .timeline-item.bottom .ticket-card {
+      margin-top: 40px;
+    }
+
+    /* 照片墙样式 */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      max-width: 1400px;
+      padding: 0 32px;
+      margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .photo-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .polaroid {
+      width: 240px;
+      height: 240px;
+      padding: 8px;
+      background: #F2E3CF;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: grab;
+      position: relative;
+    }
+    .polaroid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    .polaroid-caption {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-family: "Caveat", cursive;
+      color: rgba(242, 227, 207, 0.7);
+      font-size: 14px;
+    }
+
+    /* 手绘装饰物样式 */
+    .hand-drawn-decoration {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.6;
+    }
+    @keyframes sun-glow {
+      0%, 100% { filter: drop-shadow(0 0 10px #E35342); }
+      50% { filter: drop-shadow(0 0 20px #E35342); }
+    }
+    .sun-decoration { animation: sun-glow 3s ease-in-out infinite; }
+    @keyframes cloud-float {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(20px) translateY(-10px); }
+    }
+    .cloud-decoration { animation: cloud-float 6s ease-in-out infinite; }
+    @keyframes tree-sway {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+    .tree-decoration {
+      transform-origin: bottom center;
+      animation: tree-sway 4s ease-in-out infinite;
+    }
+
+    /* 标题水平居中 */
+    h1, h2, h3 {
+      text-align: center;
+    }
+
+    /* 段落和文字水平居中 */
+    p, span {
+      text-align: center;
+    }
+
+    /* ========== 信封打開動畫 ========== */
+    #envelope {
+      position: fixed;
+      inset: 0;
+      background: #212121;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: pointer;
+      transition: opacity 1s ease;
+    }
+
+    /* 信封主体 */
+    .envelope-body {
+      width: 220px;
+      height: 140px;
+      background: #F2E3CF;
+      border-radius: 6px;
+      position: absolute;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    /* 上盖 */
+    .flap {
+      width: 220px;
+      height: 140px;
+      background: #E35342;
+      clip-path: polygon(0 0, 100% 0, 50% 60%);
+      transform-origin: top;
+      transition: transform 1s ease;
+      position: absolute;
+    }
+
+    #envelope.open .flap {
+      transform: rotateX(180deg);
+    }
+
+    /* 信纸 */
+    .letter {
+      position: absolute;
+      color: #212121;
+      font-family: "Caveat";
+      font-size: 1.6rem;
+      transform: translateY(10px);
+      transition: transform 1s ease;
+    }
+
+    #envelope.open .letter {
+      transform: translateY(-60px);
+    }
+
+    /* ========== 時間線滾動動畫 ========== */
+    .timeline-item {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .timeline-item.show {
+      opacity: 1;
+    }
+
+    /* ========== 結尾打字機效果 ========== */
+    #line1, #line2 {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 信封打開動畫 -->
+  <div id="envelope">
+    <div class="envelope-body"></div>
+    <div class="flap"></div>
+    <div class="letter">打开一封信</div>
+  </div>
+
+<main class="bg-[#212121] min-h-screen">
+  <!-- Hero 区域 带 螺旋装订+孔洞效果 标题水平居中 -->
+  <section class="min-h-screen flex items-center justify-center relative px-4">
+    <div class="absolute top-20 left-10 w-32 h-32 rounded-full bg-[#E35342] opacity-10 blur-3xl"></div>
+    <div class="absolute bottom-20 right-10 w-48 h-48 rounded-full bg-[#E35342] opacity-10 blur-3xl"></div>
+    
+    <!-- 标题居中容器 -->
+    <div style="width: 100%; text-align: center;">
+      <h1 class="text-6xl md:text-[8rem] text-[#F2E3CF] mb-8 mx-auto" style="line-height: 1.2;">
+        <span class="font-caveat">這個</span><span class="font-dancing">世界</span><span class="font-caveat">需要</span>
+        <br/>
+        <span class="font-dancing" style="color: #E35342;">lovestory</span>
+      </h1>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 2rem; margin: 0 auto; width: 100%;">
+        <p class="font-caveat text-[#F2E3CF]">爱</p>
+        <span style="color: #E35342; text-align: center;">❤</span>
+        <p class="font-dancing text-[#E35342]">Love</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 留白区域 - Hero和时间轴之间 -->
+  <section style="height: 25vh; min-height: 200px;"></section>
+
+  <!-- 水平时间线 -->
+  <section class="py-20 px-4">
+    <h2 class="text-4xl md:text-5xl font-caveat text-center mb-16">我们的故事</h2>
+    
+    <div class="timeline-horizontal">
+      <!-- 垂坠线 SVG（由 JavaScript 动态绘制） -->
+      <svg id="timeline-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></svg>
+      <script>
+        function drawTimelineLines() {
+          const svg = document.getElementById('timeline-svg');
+          const container = document.querySelector('.timeline-horizontal');
+          const dots = document.querySelectorAll('.timeline-dot');
+          
+          if (dots.length < 4) return;
+          
+          const containerRect = container.getBoundingClientRect();
+          
+          // 获取每个节点的精确位置
+          const positions = [];
+          dots.forEach((dot, index) => {
+            const rect = dot.getBoundingClientRect();
+            positions.push({
+              x: rect.left - containerRect.left + rect.width / 2,
+              y: rect.top - containerRect.top + rect.height / 2
+            });
+          });
+          
+          // 清除旧线条
+          svg.innerHTML = '';
+          
+          // 绘制三条垂坠线
+          const pairs = [[0, 1], [1, 2], [2, 3]];
+          pairs.forEach(([start, end]) => {
+            const p1 = positions[start];
+            const p2 = positions[end];
+            
+            // 计算控制点（用于垂坠效果）
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2;
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // 控制点向下偏移，创造垂坠感
+            const controlOffset = distance * 0.5;
+            const controlX = midX;
+            const controlY = Math.max(p1.y, p2.y) + controlOffset;
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M ${p1.x} ${p1.y} Q ${controlX} ${controlY} ${p2.x} ${p2.y}`);
+            path.setAttribute('stroke', '#E35342');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('opacity', '0.9');
+            
+            // 添加动画
+            const length = path.getTotalLength();
+            path.style.strokeDasharray = length;
+            path.style.strokeDashoffset = length;
+            path.style.transition = "stroke-dashoffset 1.2s ease";
+            
+            svg.appendChild(path);
+            
+            setTimeout(() => {
+              path.style.strokeDashoffset = 0;
+            }, 50);
+          });
+        }
+        
+        // 页面加载和窗口大小改变时绘制
+        window.addEventListener('load', drawTimelineLines);
+        window.addEventListener('resize', drawTimelineLines);
+      </script>
+
+      <div class="timeline-items">
+        <!-- 卡片1 - 上方 -->
+        <div class="timeline-item top">
+          <div class="ticket-card" style="position: relative;">
+            <div class="timeline-dot" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background: #E35342; border-radius: 3px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;"></div>
+            <span class="bg-[#E35342] text-white px-3 py-1 rounded-full text-sm font-gochi">2025.04.14</span>
+            <div class="divider"></div>
+            <h3 class="text-2xl font-caveat mt-2 mb-2">初见</h3>
+            <p class="opacity-70 text-sm">那一天，阳光正好</p>
+          </div>
+        </div>
+
+        <!-- 卡片2 - 下方 -->
+        <div class="timeline-item bottom">
+          <div class="ticket-card" style="position: relative;">
+            <div class="timeline-dot" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background: #E35342; border-radius: 3px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;"></div>
+            <span class="bg-[#E35342] text-white px-3 py-1 rounded-full text-sm font-gochi">2025.06.14</span>
+            <div class="divider"></div>
+            <h3 class="text-2xl font-caveat mt-2 mb-2">在一起</h3>
+            <p class="opacity-70 text-sm">确定了彼此的心意</p>
+          </div>
+        </div>
+
+        <!-- 卡片3 - 上方 -->
+        <div class="timeline-item top">
+          <div class="ticket-card" style="position: relative;">
+            <div class="timeline-dot" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background: #E35342; border-radius: 3px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;"></div>
+            <span class="bg-[#E35342] text-white px-3 py-1 rounded-full text-sm font-gochi">2025.12.25</span>
+            <div class="divider"></div>
+            <h3 class="text-2xl font-caveat mt-2 mb-2">第一个圣诞节</h3>
+            <p class="opacity-70 text-sm">一起度过的温馨时光</p>
+          </div>
+        </div>
+
+        <!-- 卡片4 - 下方 -->
+        <div class="timeline-item bottom">
+          <div class="ticket-card" style="position: relative;">
+            <div class="timeline-dot" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background: #E35342; border-radius: 3px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); z-index: 10;"></div>
+            <span class="bg-[#E35342] text-white px-3 py-1 rounded-full text-sm font-gochi">2026.04.14</span>
+            <div class="divider"></div>
+            <h3 class="text-2xl font-caveat mt-2 mb-2">一周年</h3>
+            <p class="opacity-70 text-sm">365天的陪伴</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 留白区域 - 时间轴和照片墙之间 -->
+  <section style="height: 15vh; min-height: 120px;"></section>
+
+  <!-- 照片墙 -->
+  <section class="py-20 px-4" style="height: 1000px; position: relative;">
+    <h2 class="text-4xl md:text-5xl font-dancing text-center mb-6">Memories</h2>
+    <p class="text-center font-gochi opacity-60 mb-12">拖动照片来 rearrange 它们的位置</p>
+    <div class="photo-grid" style="position: relative; height: 850px; background-image: linear-gradient(rgba(242,227,207,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(242,227,207,0.15) 1px, transparent 1px); background-size: 40px 40px; background-position: center center;">
+      <div class="polaroid" style="transform:rotate(-2deg)">
+        <img src="/photos/ref1.jpg" alt="照片">
+        <p class="polaroid-caption">2025.04.14</p>
+      </div>
+      <div class="polaroid" style="transform:rotate(1deg)">
+        <img src="/photos/ref2.jpg" alt="照片">
+        <p class="polaroid-caption">2025.05.15</p>
+      </div>
+      <div class="polaroid" style="transform:rotate(-1deg)">
+        <img src="/photos/photo3.jpg" alt="照片">
+        <p class="polaroid-caption">2025.06.16</p>
+      </div>
+      <div class="polaroid" style="transform:rotate(2deg)">
+        <img src="/photos/photo4.jpg" alt="照片">
+        <p class="polaroid-caption">2025.07.17</p>
+      </div>
+      <div class="polaroid" style="transform:rotate(-2deg)">
+        <img src="/photos/photo5.jpg" alt="照片">
+        <p class="polaroid-caption">2025.08.18</p>
+      </div>
+      <div class="polaroid" style="transform:rotate(1deg)">
+        <img src="/photos/photo6.jpg" alt="照片">
+        <p class="polaroid-caption">2025.09.19</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 留白区域 2 - 照片墙和底部文字之间 -->
+  <section style="height: 30vh; min-height: 240px;"></section>
+
+  <!-- 结尾 - 位于网页内容最底部（需要滚动到最下方才能看到） -->
+  <section style="height: 80vh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; text-align: center; padding-bottom: 80px; margin-top: 100px; position: relative;">
+    <p id="line1" style="font-size: 2rem; font-family: 'Caveat', cursive; margin-bottom: 1.5rem;">波浪在海面上</p>
+    <p id="line2" style="font-size: 2rem; font-family: 'Dancing Script', cursive; color: #E35342; margin-bottom: 1.5rem;">萤火在岸边</p>
+    <div style="border: 3px solid #E35342; border-radius: 12px; padding: 20px 40px; display: inline-block; margin-bottom: 1.5rem; background: rgba(242,227,207,0.1);">
+      <span style="font-size: 2.5rem; font-family: 'Gochi Hand', cursive; color: #F2E3CF;">2026.06.14</span>
+    </div>
+    <p style="font-size: 0.9rem; opacity: 0.5; font-family: 'Gochi Hand', cursive;">Made with love</p>
+    <!-- 底部装饰线条 -->
+    <div style="width: 200px; height: 3px; background: linear-gradient(90deg, transparent, #E35342, transparent); margin-top: 30px; opacity: 0.5;"></div>
+    
+    <!-- 海浪和椰子树装饰 - 页面底端（随滚动） -->
+    <!-- 海浪线条 - 左下角（海浪 + 落日整体设计） -->
+    <svg class="hand-drawn-decoration" width="280" height="100" viewBox="0 0 280 100" style="position: absolute; bottom: 0; left: 0; pointer-events: none;">
+      <!-- 定义裁剪区域：只保留海浪上方的部分 -->
+      <defs>
+        <clipPath id="sunset-clip">
+          <rect x="0" y="0" width="280" height="65"/>
+        </clipPath>
+      </defs>
+      
+      <!-- 落日（使用裁剪，被海浪遮挡的部分消失） -->
+      <g opacity="0.8" clip-path="url(#sunset-clip)">
+        <circle cx="140" cy="62" r="25" stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="140" cy="62" r="18" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+        <circle cx="140" cy="62" r="6" fill="#E35342" opacity="0.9"/>
+        <!-- 太阳光芒（手绘线条，向上发散） -->
+        <g stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6">
+          <path d="M140 30 L140 24"/>
+          <path d="M140 34 L140 30"/>
+          <path d="M120 37 L116 32"/>
+          <path d="M125 40 L122 36"/>
+          <path d="M160 37 L164 32"/>
+          <path d="M155 40 L158 36"/>
+          <path d="M108 47 L103 42"/>
+          <path d="M172 47 L177 42"/>
+        </g>
+      </g>
+      
+      <!-- 海浪（在落日前面） -->
+      <g stroke="#E35342" fill="none" stroke-linecap="round">
+        <!-- 主海浪线条 -->
+        <path d="M0 65 Q35 55 70 65 Q105 75 140 65 Q175 55 210 65 Q245 75 280 65" stroke-width="3" opacity="0.9"/>
+        <path d="M0 73 Q30 65 60 73 Q90 81 120 73 Q150 65 180 73 Q210 81 240 73 Q270 65 280 68" stroke-width="2" opacity="0.7"/>
+        <!-- 小海浪细节 -->
+        <path d="M10 80 Q25 76 40 80 Q55 84 70 80" stroke-width="1.5" opacity="0.5"/>
+        <path d="M210 80 Q225 76 240 80 Q255 84 270 80" stroke-width="1.5" opacity="0.5"/>
+      </g>
+    </svg>
+    
+    <!-- 海浪线条 - 右下角 -->
+    <svg class="hand-drawn-decoration" width="250" height="50" viewBox="0 0 250 50" style="position: absolute; bottom: 0; right: 0; pointer-events: none;">
+      <path d="M0 30 Q30 20 60 30 Q90 40 120 30 Q150 20 180 30 Q210 40 250 30" stroke="#E35342" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M0 38 Q25 32 50 38 Q75 44 100 38 Q125 32 150 38 Q175 44 200 38 Q225 32 250 38" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+      <path d="M150 45 Q170 40 190 45 Q210 50 230 45" stroke="#E35342" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+    </svg>
+    
+    <!-- 椰子树装饰 - 手绘涂鸦风格（树叶向下） -->
+    <svg class="hand-drawn-decoration tree-decoration" width="120" height="180" viewBox="0 0 120 180" style="position: absolute; bottom: 0; right: 60px; pointer-events: none;">
+      <!-- 树干 - 手绘弯曲线条 -->
+      <path d="M55 170 Q58 140 56 110 Q54 80 57 50 Q59 30 58 15" stroke="#E35342" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M62 170 Q60 140 62 110 Q60 80 63 50 Q61 30 62 15" stroke="#E35342" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <!-- 树干纹理 - 涂鸦线条 -->
+      <path d="M56 150 L61 148" stroke="#E35342" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <path d="M55 130 L62 128" stroke="#E35342" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <path d="M57 110 L60 108" stroke="#E35342" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <path d="M56 90 L61 88" stroke="#E35342" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <path d="M58 70 L59 68" stroke="#E35342" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <path d="M57 50 L60 48" stroke="#E35342" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+      <!-- 椰子叶 - 向下弯曲的曲线 -->
+      <g stroke="#E35342" stroke-width="3" fill="none" stroke-linecap="round">
+        <!-- 左侧叶子（向下） -->
+        <path d="M58 15 Q40 25 30 35 Q22 42 15 48"/>
+        <path d="M58 15 Q38 28 28 40 Q22 48 18 55"/>
+        <path d="M58 15 Q42 30 35 42 Q30 50 25 58"/>
+        <path d="M58 15 Q45 22 35 32 Q28 40 22 48"/>
+        <!-- 右侧叶子（向下） -->
+        <path d="M60 15 Q78 25 88 35 Q96 42 103 48"/>
+        <path d="M60 15 Q80 28 90 40 Q96 48 100 55"/>
+        <path d="M60 15 Q76 30 83 42 Q88 50 93 58"/>
+        <path d="M60 15 Q73 22 83 32 Q90 40 96 48"/>
+        <!-- 中间叶子（向下） -->
+        <path d="M59 15 Q59 30 59 45 Q59 55 59 62"/>
+        <path d="M59 15 Q53 28 53 42 Q53 52 53 60"/>
+        <path d="M59 15 Q65 28 65 42 Q65 52 65 60"/>
+      </g>
+      <!-- 椰子果实 - 涂鸦风格 -->
+      <ellipse cx="52" cy="20" rx="5" ry="6" fill="#E35342" opacity="0.9"/>
+      <ellipse cx="66" cy="18" rx="4" ry="5" fill="#E35342" opacity="0.9"/>
+      <ellipse cx="59" cy="24" rx="4" ry="5" fill="#E35342" opacity="0.8"/>
+    </svg>
+    
+    <!-- 小椰子树装饰 - 远景（树叶向下） -->
+    <svg class="hand-drawn-decoration tree-decoration" width="80" height="120" viewBox="0 0 80 120" style="position: absolute; bottom: 0; right: 180px; opacity: 0.7; pointer-events: none;">
+      <!-- 树干 -->
+      <path d="M38 110 Q40 85 39 60 Q38 35 40 15" stroke="#E35342" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M42 110 Q41 85 42 60 Q41 35 42 15" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <!-- 叶子（向下） -->
+      <g stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round">
+        <path d="M41 15 Q28 25 20 35 Q14 42 10 48"/>
+        <path d="M41 15 Q25 28 18 40 Q14 48 12 55"/>
+        <path d="M41 15 Q54 25 62 35 Q68 42 72 48"/>
+        <path d="M41 15 Q57 28 64 40 Q68 48 70 55"/>
+        <path d="M41 15 Q41 30 41 45 Q41 55 41 62"/>
+      </g>
+      <!-- 椰子 -->
+      <circle cx="36" cy="20" r="3" fill="#E35342" opacity="0.8"/>
+      <circle cx="46" cy="18" r="2.5" fill="#E35342" opacity="0.8"/>
+    </svg>
+  </section>
+</main>
+
+<!-- 手绘风格装饰物 - 页面全局装饰 -->
+<!-- 太阳装饰 -->
+<svg class="hand-drawn-decoration sun-decoration" width="120" height="120" viewBox="0 0 120 120" style="top: 30px; right: 50px;">
+  <g stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M60 5 L60 2 M60 118 L60 115"/>
+    <path d="M98 22 L100 20 M22 98 L20 100"/>
+    <path d="M115 60 L118 60 M5 60 L2 60"/>
+    <path d="M98 98 L100 100 M22 22 L20 20"/>
+    <path d="M85 10 L87 8 M35 110 L33 112"/>
+    <path d="M110 35 L112 33 M10 85 L8 87"/>
+    <path d="M110 85 L112 87 M10 35 L8 33"/>
+    <path d="M85 110 L87 112 M35 10 L33 8"/>
+  </g>
+  <circle cx="60" cy="60" r="25" stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="60" cy="60" r="20" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <circle cx="60" cy="60" r="8" fill="#E35342" opacity="0.8"/>
+</svg>
+
+<!-- 云朵装饰 1 -->
+<svg class="hand-drawn-decoration cloud-decoration" width="150" height="80" viewBox="0 0 150 80" style="top: 150px; left: 80px;">
+  <path d="M20 50 Q20 30 40 30 Q40 15 60 15 Q80 15 80 30 Q100 30 100 50 Q100 70 80 70 L40 70 Q20 70 20 50" stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 55 Q30 40 45 40 Q45 25 60 25 Q75 25 75 40 Q90 40 90 55 Q90 65 75 65 L45 65 Q30 65 30 55" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+</svg>
+
+<!-- 云朵装饰 2 -->
+<svg class="hand-drawn-decoration cloud-decoration" width="120" height="60" viewBox="0 0 120 60" style="top: 100px; right: 200px;">
+  <path d="M15 40 Q15 25 30 25 Q30 10 50 10 Q70 10 70 25 Q85 25 85 40 Q85 55 70 55 L30 55 Q15 55 15 40" stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+
+  <!-- 树干 -->
+  <path d="M38 110 Q40 85 39 60 Q38 35 40 15" stroke="#E35342" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M42 110 Q41 85 42 60 Q41 35 42 15" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.8"/>
+  <!-- 叶子 -->
+  <g stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <path d="M41 15 Q30 12 22 8 Q18 6 14 3"/>
+    <path d="M41 15 Q28 10 20 6 Q16 4 12 3"/>
+    <path d="M41 15 Q52 12 60 8 Q64 6 68 3"/>
+    <path d="M41 15 Q54 10 62 6 Q66 4 70 3"/>
+    <path d="M41 15 Q41 6 41 1"/>
+  </g>
+  <!-- 椰子 -->
+  <circle cx="36" cy="20" r="3" fill="#E35342" opacity="0.8"/>
+
+<!-- 小爱心装饰 -->
+<svg class="hand-drawn-decoration" width="30" height="30" viewBox="0 0 30 30" style="top: 200px; right: 400px;">
+  <path d="M15 25 C5 18 2 12 2 8 C2 4 6 2 10 2 C12 2 14 3 15 5 C16 3 18 2 20 2 C24 2 28 4 28 8 C28 12 25 18 15 25Z" stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>
+
+<svg class="hand-drawn-decoration" width="25" height="25" viewBox="0 0 25 25" style="top: 350px; left: 150px; opacity: 0.6;">
+  <path d="M12.5 22 C4 16 2 11 2 7 C2 4 5 2 8 2 C10 2 11.5 3 12.5 4 C13.5 3 15 2 17 2 C20 2 23 4 23 7 C23 11 21 16 12.5 22Z" stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>
+
+<svg class="hand-drawn-decoration" width="20" height="20" viewBox="0 0 20 20" style="bottom: 200px; left: 200px; opacity: 0.5;">
+  <path d="M10 18 C3 13 1 9 1 6 C1 3 3 1 6 1 C7.5 1 9 2 10 3 C11 2 12.5 1 14 1 C17 1 19 3 19 6 C19 9 17 13 10 18Z" stroke="#E35342" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
+
+<!-- 五角星装饰 1 -->
+<svg class="hand-drawn-decoration" width="50" height="50" viewBox="0 0 50 50" style="top: 80px; left: 300px;">
+  <path d="M25 2 L30 18 L47 18 L33 28 L38 45 L25 35 L12 45 L17 28 L3 18 L20 18 Z" 
+        stroke="#E35342" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M25 8 L28 16 L37 16 L30 22 L33 32 L25 26 L17 32 L20 22 L13 16 L22 16 Z" 
+        stroke="#E35342" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+</svg>
+
+<!-- 五角星装饰 2 -->
+<svg class="hand-drawn-decoration" width="35" height="35" viewBox="0 0 35 35" style="top: 150px; right: 250px; opacity: 0.5;">
+  <path d="M17.5 1 L20 10 L30 10 L22 16 L25 26 L17.5 20 L10 26 L13 16 L5 10 L15 10 Z" 
+        stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+<!-- 五角星装饰 3 -->
+<svg class="hand-drawn-decoration" width="30" height="30" viewBox="0 0 30 30" style="bottom: 250px; left: 100px; opacity: 0.6;">
+  <path d="M15 1 L17 8 L25 8 L19 13 L21 21 L15 16 L9 21 L11 13 L3 8 L11 8 Z" 
+        stroke="#E35342" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+<!-- 拖动照片 JS - 修复版 -->
+<script>
+  const photos = document.querySelectorAll('.polaroid');
+  let active = null;
+  let offsetX = 0;
+  let offsetY = 0;
+  let isDragging = false;
+
+  // 开始拖动
+  const startDrag = (e, photo) => {
+    e.preventDefault();
+    active = photo;
+    isDragging = true;
+    
+    // 获取当前位置
+    const rect = photo.getBoundingClientRect();
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    
+    // 计算鼠标相对于照片左上角的偏移
+    offsetX = clientX - rect.left;
+    offsetY = clientY - rect.top;
+    
+    // 设置拖动样式
+    photo.style.zIndex = 1000;
+    photo.style.transition = 'none';
+    photo.style.cursor = 'grabbing';
+    photo.style.transform = photo.style.transform.replace('scale(1)', '') + ' scale(1.05)';
+    
+    // 将照片设为 fixed 定位，相对于视口
+    photo.style.position = 'fixed';
+    photo.style.left = rect.left + 'px';
+    photo.style.top = rect.top + 'px';
+  };
+
+  // 移动拖动
+  const moveDrag = (e) => {
+    if (!active || !isDragging) return;
+    e.preventDefault();
+    
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    
+    // 计算新位置（相对于视口）
+    let newX = clientX - offsetX;
+    let newY = clientY - offsetY;
+    
+    // 限制在视口范围内（整个屏幕）
+    const photoWidth = active.offsetWidth;
+    const photoHeight = active.offsetHeight;
+    
+    // 留出边距，不要贴边
+    const margin = 20;
+    newX = Math.max(margin, Math.min(newX, window.innerWidth - photoWidth - margin));
+    newY = Math.max(margin, Math.min(newY, window.innerHeight - photoHeight - margin));
+    
+    // 应用新位置
+    active.style.left = newX + 'px';
+    active.style.top = newY + 'px';
+  };
+
+  // 结束拖动
+  const endDrag = () => {
+    if (!active) return;
+    
+    // 获取当前的 fixed 位置（相对于视口）
+    const rect = active.getBoundingClientRect();
+    const viewportLeft = rect.left;
+    const viewportTop = rect.top;
+    
+    // 获取当前滚动位置
+    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // 计算相对于文档的位置
+    const pageLeft = viewportLeft + scrollX;
+    const pageTop = viewportTop + scrollY;
+    
+    // 将照片移动到 body 层级，避免父容器影响
+    document.body.appendChild(active);
+    
+    // 恢复样式，改为 absolute 定位（相对于 body）
+    active.style.position = 'absolute';
+    active.style.left = pageLeft + 'px';
+    active.style.top = pageTop + 'px';
+    active.style.zIndex = '';
+    active.style.transition = 'transform 0.2s ease';
+    active.style.cursor = 'grab';
+    active.style.transform = active.style.transform.replace('scale(1.05)', '');
+    
+    active = null;
+    isDragging = false;
+  };
+
+  // 为每张照片添加事件监听
+  photos.forEach(photo => {
+    photo.addEventListener('mousedown', (e) => startDrag(e, photo));
+    photo.addEventListener('touchstart', (e) => startDrag(e, photo), {passive: false});
+  });
+
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, {passive: false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+  
+  // 防止拖拽时选中文字
+  document.addEventListener('selectstart', (e) => {
+    if (isDragging) e.preventDefault();
+  });
+
+  // 爱心粒子效果
+  document.addEventListener('click', (e) => {
+    // 如果点击的是照片，不触发爱心效果
+    if (e.target.closest('.polaroid')) return;
+    
+    const heartCount = Math.floor(Math.random() * 3) + 1;
+    
+    for (let i = 0; i < heartCount; i++) {
+      const heart = document.createElement('span');
+      heart.innerText = '❤';
+      heart.style.position = 'fixed';
+      const offsetX = (Math.random() - 0.5) * 30;
+      const offsetY = (Math.random() - 0.5) * 30;
+      heart.style.left = (e.clientX + offsetX) + 'px';
+      heart.style.top = (e.clientY + offsetY) + 'px';
+      heart.style.color = '#E35342';
+      heart.style.pointerEvents = 'none';
+      heart.style.fontSize = '13px';
+      const animationDuration = 0.8 + Math.random() * 0.4;
+      heart.style.animation = `float ${animationDuration}s forwards`;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), animationDuration * 1000);
+    }
+  });
+
+  // 添加浮动动画
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes float { 
+      0% { transform: translateY(0); opacity: 1; } 
+      100% { transform: translateY(-60px); opacity: 0; } 
+    }
+  `;
+  document.head.appendChild(style);
+
+  // ========== 信封打開動畫 ==========
+  const envelope = document.getElementById("envelope");
+  envelope.addEventListener("click", () => {
+    envelope.classList.add("open");
+    setTimeout(() => {
+      envelope.style.opacity = "0";
+      envelope.style.pointerEvents = "none";
+    }, 1000);
+  });
+
+  // ========== 時間線滾動觸發動畫 ==========
+  // 修改 SVG path 添加動畫
+  const originalDrawTimeline = drawTimelineLines;
+  drawTimelineLines = function() {
+    originalDrawTimeline();
+    const paths = document.querySelectorAll('#timeline-svg path');
+    paths.forEach(path => {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = length;
+      path.style.strokeDashoffset = length;
+      path.style.transition = "stroke-dashoffset 1.5s ease";
+    });
+  };
+  drawTimelineLines();
+
+  // IntersectionObserver 觸發線條繪製
+  const timelineObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const paths = document.querySelectorAll('#timeline-svg path');
+        paths.forEach((p, i) => {
+          setTimeout(() => {
+            p.style.strokeDashoffset = 0;
+          }, i * 300);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const timelineSection = document.querySelector('.timeline-horizontal');
+  if (timelineSection) {
+    timelineObserver.observe(timelineSection);
+  }
+
+  // 卡片逐個出現動畫
+  const items = document.querySelectorAll('.timeline-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+
+        // 等出现后再画线，确保位置稳定
+        setTimeout(() => {
+          drawTimelineLines();
+        }, 100);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  items.forEach(item => observer.observe(item));
+
+  // ========== 結尾打字機效果 ==========
+  function typeText(el, text, speed = 60) {
+    el.innerHTML = "";
+    el.style.opacity = 1;
+
+    let i = 0;
+
+    function typing() {
+      if (i < text.length) {
+        el.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, speed);
+      }
+    }
+
+    typing();
+  }
+
+  let triggered = false;
+
+  window.addEventListener("scroll", () => {
+    const scrollBottom = window.innerHeight + window.scrollY;
+    const fullHeight = document.body.offsetHeight;
+
+    if (!triggered && scrollBottom >= fullHeight - 50) {
+      triggered = true;
+
+      const l1 = document.getElementById("line1");
+      const l2 = document.getElementById("line2");
+
+      const t1 = l1.textContent;
+      const t2 = l2.textContent;
+
+      typeText(l1, t1);
+
+      setTimeout(() => {
+        typeText(l2, t2);
+      }, 1200);
+    }
+  });
+</script>
+
+</body>
+</html>
