@@ -7,6 +7,7 @@
   <meta name="description" content="波浪在海面上 萤火在岸边" />
   <link rel="stylesheet" href="./fonts/fonts.css" />
   <script src="./js/dotlottie-player.js" type="module" defer></script>
+  <script src="./js/timeline-render.js" type="module" defer></script>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#E35342" />
@@ -587,129 +588,8 @@
     <div class="timeline-horizontal">
       <!-- 垂坠线 SVG（由 JavaScript 动态绘制） -->
       <svg id="timeline-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; overflow: visible;"></svg>
-      <script>
-        function drawTimelineLines() {
-          const svg = document.getElementById('timeline-svg');
-          const container = document.querySelector('.timeline-horizontal');
-          if (!svg || !container) return;
-          
-          // 移动端不画垂坠线（卡片垂直排列，垂坠线无意义）
-          if (window.innerWidth < 768) {
-            svg.innerHTML = '';
-            return;
-          }
-          
-          const dots = container.querySelectorAll('.timeline-item .timeline-dot');
-          if (dots.length < 4) return;
-          
-          const containerRect = container.getBoundingClientRect();
-          
-          // 初始化数组
-          const positions = [];
-          const pairs = [[0, 1], [1, 2], [2, 3]];
-          
-          // 获取每个节点的精确位置
-          dots.forEach((dot, index) => {
-            const rect = dot.getBoundingClientRect();
-            positions.push({
-              x: rect.left - containerRect.left + rect.width / 2,
-              y: rect.top - containerRect.top + rect.height / 2
-            });
-          });
-          
-          // 清除旧线条
-          svg.innerHTML = '';
-          
-          // 绘制三条垂坠线
-          pairs.forEach(([start, end]) => {
-            const p1 = positions[start];
-            const p2 = positions[end];
-            
-            // 计算控制点（用于垂坠效果）
-            const midX = (p1.x + p2.x) / 2;
-            const dx = p2.x - p1.x;
-            const dy = p2.y - p1.y;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            
-            // 控制点向下偏移，创造垂坠感
-            const controlOffset = length * 0.3;
-            const controlX = midX;
-            const controlY = Math.max(p1.y, p2.y) + controlOffset;
-            
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', `M ${p1.x} ${p1.y} Q ${controlX} ${controlY} ${p2.x} ${p2.y}`);
-            path.setAttribute('stroke', '#E35342');
-            path.setAttribute('stroke-width', '3');
-            path.setAttribute('fill', 'none');
-            path.setAttribute('stroke-linecap', 'round');
-            path.setAttribute('opacity', '0.9');
-            
-            svg.appendChild(path);
-            
-            // 垂坠线绘制动画
-            const len = path.getTotalLength();
-            path.style.strokeDasharray = len;
-            path.style.strokeDashoffset = len;
-            path.style.transition = `stroke-dashoffset 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${start * 0.2}s`;
-            // 强制重绘后触发动画 - 必须用 requestAnimationFrame 确保浏览器先应用初始状态
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                path.style.strokeDashoffset = '0';
-              });
-            });
-          });
-        }
-        
-        // 页面加载和窗口大小改变时绘制
-        window.addEventListener('load', drawTimelineLines);
-        window.addEventListener('resize', drawTimelineLines);
-      </script>
 
-      <div class="timeline-items">
-        <!-- 卡片1 - 上方 -->
-        <div class="timeline-item top">
-          <div class="ticket-card" style="position: relative;">
-            <div class="timeline-dot"></div>
-            <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-gochi">2024.12.29</span>
-            <div class="divider"></div>
-            <h3 class="text-2xl font-caveat mt-2 mb-2">Once</h3>
-            <p class="opacity-70 text-sm">冬天遇见</p>
-          </div>
-        </div>
-
-        <!-- 卡片2 - 下方 -->
-        <div class="timeline-item bottom">
-          <div class="ticket-card" style="position: relative;">
-            <div class="timeline-dot"></div>
-            <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-gochi">2025.06.14</span>
-            <div class="divider"></div>
-            <h3 class="text-2xl font-caveat mt-2 mb-2">Yes</h3>
-            <p class="opacity-70 text-sm">夏天开始</p>
-          </div>
-        </div>
-
-        <!-- 卡片3 - 上方 -->
-        <div class="timeline-item top">
-          <div class="ticket-card" style="position: relative;">
-            <div class="timeline-dot"></div>
-            <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-gochi">2025.12.31</span>
-            <div class="divider"></div>
-            <h3 class="text-2xl font-caveat mt-2 mb-2">Still</h3>
-            <p class="opacity-70 text-sm">秋去冬至</p>
-          </div>
-        </div>
-
-        <!-- 卡片4 - 下方 -->
-        <div class="timeline-item bottom">
-          <div class="ticket-card" style="position: relative;">
-            <div class="timeline-dot"></div>
-            <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-gochi">2026.06.14</span>
-            <div class="divider"></div>
-            <h3 class="text-2xl font-caveat mt-2 mb-2">Always</h3>
-            <p class="opacity-70 text-sm">周而复始</p>
-          </div>
-        </div>
-      </div>
+      <div class="timeline-items"><!-- 由 js/timeline-render.js 按 js/timeline-data.js 渲染 --></div>
     </div>
   </section>
 
