@@ -1000,16 +1000,7 @@
   // ========== Hero 标题 stagger 入场 ==========
   // Hero 入场由 CSS @keyframes heroTextFadeIn 驱动，无需 JS
 
-  // ========== 卡片逐个出现动画 ==========
-  const items = document.querySelectorAll('.timeline-item');
-  const cardObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-      }
-    });
-  }, { threshold: 0.1 });
-  items.forEach(item => cardObserver.observe(item));
+  // 卡片逐个出现动画已移入 js/timeline-render.js（卡片在该模块渲染后才存在）
 
   // ========== 通用滚动入场动画 ==========
   const revealEls = document.querySelectorAll('.reveal-on-scroll');

@@ -79,6 +79,31 @@ export function drawTimelineLines(container, svg, minWidth = 768) {
   });
 }
 
+/**
+ * 给渲染出的卡片挂滚动入场观察器。
+ *
+ * 必须在 renderItems 之后调用：卡片是动态生成的，
+ * 放在 index.html 的解析期脚本里会因为元素还不存在而静默失效（卡片一直 opacity:0）。
+ *
+ * @param {HTMLElement} container .timeline-items
+ * @param {number} threshold
+ * @returns {IntersectionObserver|null}
+ */
+export function observeCardReveal(container, threshold = 0.1) {
+  if (!container || typeof IntersectionObserver === 'undefined') return null;
+  const items = container.querySelectorAll('.timeline-item');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('show');
+      });
+    },
+    { threshold }
+  );
+  items.forEach((item) => observer.observe(item));
+  return observer;
+}
+
 /** 极简转义，防止文案里的 < > & 破坏结构 */
 function escapeHtml(str) {
   return String(str)
@@ -89,13 +114,14 @@ function escapeHtml(str) {
 
 /** 挂在 window 上供内联调用（保持与旧调用点兼容） */
 if (typeof window !== 'undefined') {
-  window.__timeline = { renderItems, drawTimelineLines };
+  window.__timeline = { renderItems, drawTimelineLines, observeCardReveal };
   window.addEventListener('load', () => {
     const container = document.querySelector('.timeline-horizontal');
     const items = document.querySelector('.timeline-items');
     const svg = document.getElementById('timeline-svg');
     if (!items) return;
     renderItems(items, TIMELINE_ITEMS);
+    observeCardReveal(items);
     drawTimelineLines(container, svg);
   });
   window.addEventListener('resize', () => {
