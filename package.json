@@ -1,0 +1,15 @@
+{
+  "name": "anniversary-site",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "一周年纪念站点：静态站点 + 数据驱动时间线",
+  "scripts": {
+    "test": "node --test",
+    "dev": "python server.py",
+    "check": "node --check js/timeline-logic.js && node --check js/timeline-data.js && node --check js/timeline-render.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: npm run check
+      - name: Unit tests
+        run: npm test
+      - name: Fail if tracked files contain secrets
+        run: |
+          if git ls-files | xargs grep -lnE '(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|cv_pat_[a-f0-9]{20,})' 2>/dev/null; then
+            echo "发现疑似密钥，构建失败"; exit 1
+          fi
