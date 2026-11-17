@@ -1,9 +1,12 @@
-const CACHE_NAME = 'anniversary-v1';
+// 版本号变更会让浏览器丢弃旧缓存，确保用户拿到部署后的新页面
+const CACHE_NAME = 'anniversary-v2';
 const PRECACHE_ASSETS = [
   './',
-  './index666.html',
   './fonts/fonts.css',
   './js/dotlottie-player.js',
+  './js/timeline-data.js',
+  './js/timeline-logic.js',
+  './js/timeline-render.js',
   './images/icon-192.png',
   './images/icon-512.png'
 ];
@@ -45,7 +48,7 @@ self.addEventListener('fetch', (event) => {
   const path = url.pathname;
 
   // HTML: network-first, fallback to cache
-  if (path.endsWith('.html') || path === '/' || path === '/index666.html') {
+  if (path.endsWith('.html') || path === '/') {
     event.respondWith(
       fetch(request)
         .then((response) => {
