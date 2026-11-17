@@ -7,3 +7,9 @@ venv/
 .DS_Store
 Thumbs.db
 .env
+
+# 本地开发/构建产物
+dist/
+deploy.zip
+index666.html*
+index.html.*
